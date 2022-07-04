@@ -7,6 +7,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"text/template"
 
 	"github.com/faetools/format"
 	"github.com/faetools/kit/terminal"
@@ -94,4 +95,14 @@ func (g Generator) writeBytes(path string, content []byte, o *options) error {
 // MkdirAll creates all folders.
 func (g *Generator) MkdirAll(dir string) error {
 	return g.fs.MkdirAll(dir, os.ModePerm)
+}
+
+// WriteTemplate writes the template to the given path, creating any directories and overwriting existing files.
+func (g Generator) WriteTemplate(path string, tpl *template.Template, data interface{}) error {
+	b := &bytes.Buffer{}
+	if err := tpl.Execute(b, data); err != nil {
+		return fmt.Errorf("executing template %s: %s", tpl.Name(), err)
+	}
+
+	return g.WriteBytes(path, b.Bytes())
 }
