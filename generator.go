@@ -2,6 +2,7 @@ package cgtools
 
 import (
 	"bytes"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -10,6 +11,7 @@ import (
 	"text/template"
 
 	"github.com/faetools/format"
+	"github.com/faetools/format/yaml"
 	"github.com/faetools/kit/terminal"
 	"github.com/logrusorgru/aurora"
 	"github.com/spf13/afero"
@@ -101,8 +103,32 @@ func (g *Generator) MkdirAll(dir string) error {
 func (g Generator) WriteTemplate(path string, tpl *template.Template, data interface{}) error {
 	b := &bytes.Buffer{}
 	if err := tpl.Execute(b, data); err != nil {
-		return fmt.Errorf("executing template %s: %s", tpl.Name(), err)
+		return fmt.Errorf("executing template %s: %w", tpl.Name(), err)
 	}
 
 	return g.WriteBytes(path, b.Bytes())
+}
+
+// WriteYAML writes an interface as a yaml file.
+func (g Generator) WriteYAML(path string, v interface{}, opts ...yaml.EncodeOption) error {
+	b, err := yaml.Encode(v, opts...)
+	if err != nil {
+		return fmt.Errorf("encoding %T to YAML: %w", v, err)
+	}
+
+	return g.writeBytes(path, b, defaultOptions())
+}
+
+// WriteJSON writes an interface as a JSON file.
+func (g Generator) WriteJSON(path string, v interface{}) error {
+	b := &bytes.Buffer{}
+	enc := json.NewEncoder(b)
+	enc.SetEscapeHTML(false)
+	enc.SetIndent("", "  ")
+
+	if err := enc.Encode(v); err != nil {
+		return fmt.Errorf("encoding %T to JSON: %w", v, err)
+	}
+
+	return g.writeBytes(path, b.Bytes(), defaultOptions())
 }

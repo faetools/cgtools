@@ -3,6 +3,7 @@ module github.com/faetools/cgtools
 go 1.18
 
 require (
+	github.com/MarkRosemaker/semver v1.5.1
 	github.com/faetools/format v0.0.0-20220414215708-3bef0e0cc085
 	github.com/faetools/kit v0.0.7
 	github.com/logrusorgru/aurora v2.0.3+incompatible
