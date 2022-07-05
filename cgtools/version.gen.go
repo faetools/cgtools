@@ -6,7 +6,7 @@ import "github.com/MarkRosemaker/semver"
 
 var (
 	// Version is the version of cgtools.
-	Version = semver.MustParse("0.0.3")
+	Version = semver.MustParse("0.0.4")
 
 	// GoVersion declares what version of Go should be used.
 	GoVersion = semver.MustParse("1.18.3")
